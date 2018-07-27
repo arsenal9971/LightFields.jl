@@ -4,13 +4,6 @@
 using DataFrames
 using PyPlot
 
-# Reading the table and images
-points_x = readtable("/Users/hector/Documents/Master_thesis/EPI_code/church_EPIs_x.csv")
-points_y = readtable("/Users/hector/Documents/Master_thesis/EPI_code/church_EPIs_y.csv");
-# Import the first image
-church_first = imread("/Users/hector/Documents/Master_thesis/EPI_samples/Church_data_set/church_image-raw/church_image_lowres/church_image-raw_0000_lowres.jpg")
-church_last = imread("/Users/hector/Documents/Master_thesis/EPI_samples/Church_data_set/church_image-raw/church_image_lowres/church_image-raw_0100_lowres.jpg");
-
 # Function that paints EPI
 function paint_epi(points_x, points_y, ϵ, y0, s_rate=1)
     # Limits of the strip
@@ -87,62 +80,51 @@ function strip_epi(points_x, points_y, ϵ, y0)
 end
 
 # Paint the epis
+function paint_epis(points_x, points_y, y0, ϵ, s_rate, path_to_epis):
+	# Limits of the strip
+	y01 = y0-ϵ;
+	y02 = y0+ϵ;
+	#Subset of features catched
+	idy = (points_y[:y1].<=y02).*(points_y[:y1].>=y01)
+	array_x = points_x[idy,:];
+	t_max = maximum(array_x[:no_nas])
+	no_features = size(unique(array_x[:feature]))[1]
+	no_features = size(unique(array_x[:feature]))[1]
+	tracked_points = size(array_x)[1]
+	s_rate = 4;
+	name=string(y0)*"_"*string(ϵ)*"_"*string(t_max)*"_"string(s_rate)*"_"*string(tracked_points)*"_"*string(no_features)
+	strip_epi(points_x, points_y,ϵ,y0)
+	savefig(path_to_epis*name*"_strip", dpi = 80*3,bbox_inches="tight")
+	
+	paint_epi(points_x, points_y, ϵ, y0,12)
+	savefig(path_to_epis*name*"_sparse", dpi = 80*3,bbox_inches="tight")
 
-# Define the height and the epsilon for the strip 
-y0=673
-ϵ=10;
+	paint_epi(points_x, points_y, ϵ, y0,1)
+	savefig(path_to_epis*name*"_dense", dpi = 80*3,bbox_inches="tight")
 
-# Limits of the strip
-y01 = y0-ϵ;
-y02 = y0+ϵ;
-#Subset of features catched
-idy = (points_y[:y1].<=y02).*(points_y[:y1].>=y01)
-array_x = points_x[idy,:];
-t_max = maximum(array_x[:no_nas])
-no_features = size(unique(array_x[:feature]))[1]
-no_features = size(unique(array_x[:feature]))[1]
-tracked_points = size(array_x)[1]
+	# Painting all the EPIs
 
-s_rate = 4;
-
-name=string(y0)*"_"*string(ϵ)*"_"*string(t_max)*"_"string(s_rate)*"_"*string(tracked_points)*"_"*string(no_features)
-
-path="/Users/hector/Documents/Github_Repos/MThesis/EPIs_Strips/EPIs/"
-
-strip_epi(points_x, points_y,ϵ,y0)
-savefig(path*name*"_strip", dpi = 80*3,bbox_inches="tight")
-
-@time paint_epi(points_x, points_y, ϵ, y0,12)
-savefig(path*name*"_sparse", dpi = 80*3,bbox_inches="tight")
-
-@time paint_epi(points_x, points_y, ϵ, y0,1)
-savefig(path*name*"_dense", dpi = 80*3,bbox_inches="tight")
-
-# Painting all the EPIs
-ϵ = 8.0;
-s_rate = 7;
-
-for y00 in y0:-2ϵ:0+ϵ    
-    # Limits of the strip
-    y01 = y00-ϵ;
-    y02 = y00+ϵ;
-    #Subset of features catched
-    idy = (points_y[:y1].<=y02).*(points_y[:y1].>=y01);
-    array_x = points_x[idy,:];
-    t_max = maximum(array_x[:no_nas])
-    no_features = size(unique(array_x[:feature]))[1]
-    no_features = size(unique(array_x[:feature]))[1]
-    tracked_points = size(array_x)[1];
-    name=string(Int(y00))*"_"*string(Int(ϵ))*"_"*string(t_max)*"_"string(s_rate)*"_"*string(tracked_points)*"_"*string(no_features)    
-    path="/Users/hector/Documents/Github_Repos/MThesis/Diagrams/results/new_EPIs/"
-    strip_epi(points_x, points_y,ϵ,y00)
-    savefig(path*name*"_strip", dpi = 80*3,bbox_inches="tight")
-    clf()
-    paint_epi(points_x, points_y, ϵ, y00,s_rate)
-    savefig(path*name*"_sparse", dpi = 80*3,bbox_inches="tight")
-    clf()
-    paint_epi(points_x, points_y, ϵ, y00,1)
-    savefig(path*name*"_dense", dpi = 80*3,bbox_inches="tight")
-    clf()
+	for y00 in y0:-2ϵ:0+ϵ    
+    	# Limits of the strip
+    	y01 = y00-ϵ;
+    	y02 = y00+ϵ;
+    	#Subset of features catched
+    	idy = (points_y[:y1].<=y02).*(points_y[:y1].>=y01);
+    	array_x = points_x[idy,:];
+    	t_max = maximum(array_x[:no_nas])
+    	no_features = size(unique(array_x[:feature]))[1]
+    	no_features = size(unique(array_x[:feature]))[1]
+    	tracked_points = size(array_x)[1];
+    	name=string(Int(y00))*"_"*string(Int(ϵ))*"_"*string(t_max)*"_"string(s_rate)*"_"*string(tracked_points)*"_"*string(no_features)    
+    	
+			strip_epi(points_x, points_y,ϵ,y00)
+    	savefig(path_to_epis*name*"_strip", dpi = 80*3,bbox_inches="tight")
+    	clf()
+    	paint_epi(points_x, points_y, ϵ, y00,s_rate)
+    	savefig(path_to_epis*name*"_sparse", dpi = 80*3,bbox_inches="tight")
+    	clf()
+   		paint_epi(points_x, points_y, ϵ, y00,1)
+    	savefig(path_to_epis*name*"_dense", dpi = 80*3,bbox_inches="tight")
+   	 	clf()
+	end
 end
-

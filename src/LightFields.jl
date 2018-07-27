@@ -5,7 +5,7 @@ module LightFields
 using Shearlab
 using PyPlot
 
-export 
+export csv_to_variable, point_epis, strip_epi, paint_epis, getshearletsystem2D, inpaint_files, inpaint_file, inpaint2D_accel, inpaint2D
 
 include("tracking/efueatures.jl")
 include("painting/sparepis.jl")
