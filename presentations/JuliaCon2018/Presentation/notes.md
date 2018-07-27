@@ -84,35 +84,12 @@
 
 - A frame of an space is the generalization of an orthonormal basis (it includes, redundancy that allows sparse representations).
 
-- One can then recover an image from incomplete measurements by minimizing the ell_1 norm of the coefficients within the frame. The quality of the reconstruction will depend of how much the frame sparsifies.
+- One can then recover an image from incomplete measurements by minimizing the ell1 norm of the coefficients within the frame. The quality of the reconstruction will depend of how much the frame sparsifies.
 
-## Slide 12: Frames for images and optimal sparsity.
+- Last year I talked about the Shearlet system and related transform and how I implemented it in julia, I used this library (Shearlab.jl), one can see the Shearlet system as a multidimensional generalization of the Wavelet system and transform. 
 
-- There are some classical examples of frame systems for images, the most known is the Wavelet frames, use for compression in the JPEG 2000 algorithm.
 
-- There is a result presented by Donoho on 2001, that establishes the best optimal sparsity that a frame of an image space can achieved. This is measured by the decay of the coefficients.
-
-- The wavelets don't achieved this optimality due to its isotropic nature (images tipically are characterizes by anisotropic features, like curved edges).
-
-## Slide 13: Shearlet Transform
-
-- Kutyniok, Guo and Labate created a framework to overcome the issues that the wavelets had on representing anisotropic features. The added to the scaling matrix of the wavelets, a shearing matrix that elongates the windos functions in certain directions. This will encode the directional information of the images.
-
-- Although this very preliminar form does not yet acquired optimality in sparse representations of images, a slight modification does.
-
-## Slide 14: Modification: Cone-adapted Shearlet transform
-
-- If one divide the fourier domain in cones and construct the shearlet transform in each cone, one can cover it uniformily.
-
-- This so-called Cone-adapted shearlet transform achieves the optimal sparsity bound. 
-
-- Therefore shearlets are a good pick to use as sparsifying frame in the image inpainting of the epipolar planes.
-
-- Last year I presented my library, Shearlab.jl that implements the shearlet transform, this library is so far the fastest implementation of the framework and is the one that I used for this work.
-
-- Now we know how to inpaint Epipolar plane images and how to compute the corresponding depth, we can discuss about the end-to-end pipeline.
-
-## Slide 15: Followed Pipeline
+## Slide 12: Followed Pipeline
 
 - The end-to-end pipeline for the Light Field reconstruction is the following:
 
@@ -122,26 +99,42 @@
     - We then inpaint using shearlets with Shearlab.jl and julia. 
     - Once we have the inpainted EPIs we used the Hough Line Transform to detect the lines at the EPI and then compute the depth map using the corresponding line slopes.
 
+- The library LightFields.jl provide functions that do each of this steps, one can go to the github repository and check also the examples. 
+
 - I used julia for everything but the computer vision tasks (corner detection, point tracking and line detection), for which I used the python api of OpenCV, since I could not make this work with the julia OpenCV api. 
-
-## Slide 16: Physical Acquisition Setup
-
-- We used the data set provided by Disney Research Center at Zurich, that has 101 rectified pictures. We use 7th of the total views in order to have sub-Nyquist sampling rate.
 
 - Those are the technical details of the camera, given by the data provider.
 
-## Slide 17: Used Data Set, Church
+## Slide 13: Used Data Set, Church
 
 - The data set consists of pictures of a church in Zurich, this are the first and the last image of the sequence. 
 
-## Slide 18: Point Tracking Results
+## Slide 14: Point Tracking Results
 
 - Using the Shi-Tomasi algorithm we found 336 strong corners, and using the Lucas-Kanade algorithm we track them along the scenes. (Show the leaved traces).
 
-## Slide 19:  Particular EPI Example
+## Slide 15:  Particular EPI Example
 
 - Show the example of an EPI, with the horizontal strip of points in the EPI, corresponding to different features. Show the continuous EPIs that uses all the views, and the sparse that we used, that uses a 7th of views.
 
-## Slide 20: Results on EPIs inpainting
+## Slide 16: Results on EPIs inpainting
 
+- Show the example of the inpainted EPI.
 
+## Slide 17: Results on the line detection and depth map estimation
+
+- We used the Hough line detector to compute the depth map for each point using the provided equation. 
+
+- Show the correspoinding depth map. 
+
+## Slide 18: Open Hardware implementation
+
+- Show the picture and the hardware. Mention that the camera is not working. Also mention that the Memory of the Raspberry PIs is not sufficient to compute the shearlet system but it is possible to compute the corresponding transform 
+
+## Slide 19: Future work
+
+- The next step is to have a more stable version on the Raspberry pi, and also do Light Field rendering that uses the depth map to render a 3D graphic version of the scene.
+
+## Slide 20: Thanks
+
+- Any questions
